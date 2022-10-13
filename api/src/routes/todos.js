@@ -1,13 +1,17 @@
+const moment = require("moment");
 const { Router } = require("express");
 const pool = require("../../db");
 const router = Router();
 
+let m = moment();
+
 router.post("/", async (req, res) => {
 	try {
 		const { description } = req.body;
+		const time = m.format("DD/MM/YYYY hh:mm:ss a");
 		const newTodo = await pool.query(
-			"INSERT INTO todo (description) VALUES($1) RETURNING *",
-			[description]
+			"INSERT INTO todo (description, createdAt) VALUES($1, $2) RETURNING *",
+			[description, time]
 		);
 		res.send(newTodo.rows[0]);
 	} catch (error) {
